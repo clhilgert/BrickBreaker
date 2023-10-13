@@ -8,7 +8,7 @@ interface ButtonProps {
 const CustomButton = ({ title, func }: ButtonProps) => {
   return (
     <TouchableOpacity style={styles.button} onPress={func}>
-      <Text style={styles.buttonText}>{"testing"}</Text>
+      <Text style={styles.buttonText}>{title}</Text>
     </TouchableOpacity>
   );
 };

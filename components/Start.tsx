@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { useNavigate } from 'react-router-native';
 import { useState } from 'react';
+import CustomButton from './CustomButton';
 // interface ButtonProps {
 //   title: string,
 //   onPress: () => void;
@@ -14,18 +15,15 @@ import { useState } from 'react';
 export default function Start() {
   const navigate = useNavigate();
 
+
   return (
-    // <View style={styles.container}>
-      <View style={styles.buttonContainer}>
-      <Button
-        title={'ASDFASDF'}
-        onPress={() => navigate('/gaming')}
-      />
-
-      </View>
-
+    <View style={styles.container}>
+      <Text>GAMING</Text>
+      <CustomButton title={'START'} func={() => navigate('/gaming')} />
+    </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
