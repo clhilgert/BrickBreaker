@@ -1,4 +1,10 @@
-import { StyleSheet, Text, View, Button } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  useWindowDimensions,
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigate } from 'react-router-native';
 import { useState } from 'react';
@@ -10,7 +16,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-
 
 // export default function Game() {
 //   const navigate = useNavigate();
@@ -32,19 +37,80 @@ import Animated, {
 //   },
 // });
 
-export default function Game() {
-  const navigate = useNavigate();
+const FPS = 60;
+const DELTA = 1000 / FPS;
+const SPEED = 10;
+const BALL_WIDTH = 25;
 
-  const targetPositionX = useSharedValue(0);
-  const targetPositionY = useSharedValue(0);
+type Vector = {
+  x: number;
+  y: number;
+};
+
+const normalizeVector = (vector: Vector) => {
+  const magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+  return {
+    x: vector.x / magnitude,
+    y: vector.y / magnitude,
+  };
+};
+
+export default function Game() {
+  const { height, width } = useWindowDimensions();
+
+  const [gameOver, setGameOver] = useState(false);
+
+  const targetPositionX = useSharedValue(width / 2);
+  const targetPositionY = useSharedValue(height / 2);
+  const direction = useSharedValue(
+    normalizeVector({ x: Math.random(), y: Math.random() })
+  );
 
   useEffect(() => {
-    setInterval(update, 50);
-  }, []);
+    const interval = setInterval(() => {
+      if (!gameOver) {
+        update();
+      }
+    }, DELTA);
+
+    return () => clearInterval(interval);
+  }, [gameOver]);
 
   const update = () => {
-    targetPositionX.value = withTiming(targetPositionX.value + 10, { duration: 50, easing: Easing.linear });
-    targetPositionY.value = withTiming(targetPositionY.value + 10, { duration: 50, easing: Easing.linear });
+    let nextPos = getNextPos(direction.value);
+    let newDirection = direction.value;
+
+    if (nextPos.y < 0 || nextPos.y > height) {
+      newDirection = { x: direction.value.x, y: -direction.value.y };
+    }
+
+    if (nextPos.x < 0 || nextPos.x > width - BALL_WIDTH) {
+      newDirection = { x: -direction.value.x, y: direction.value.y };
+    }
+
+    direction.value = newDirection;
+    nextPos = getNextPos(newDirection);
+
+    targetPositionX.value = withTiming(nextPos.x, {
+      duration: DELTA,
+      easing: Easing.linear,
+    });
+    targetPositionY.value = withTiming(nextPos.y, {
+      duration: DELTA,
+      easing: Easing.linear,
+    });
+  };
+
+  type Direction = {
+    x: number;
+    y: number;
+  };
+
+  const getNextPos = (direction: Direction) => {
+    return {
+      x: targetPositionX.value + direction.x * SPEED,
+      y: targetPositionY.value + direction.y * SPEED,
+    };
   };
 
   const ballAnimatedStyles = useAnimatedStyle(() => {
@@ -58,8 +124,6 @@ export default function Game() {
     <View style={styles.container}>
       <Animated.View style={[styles.ball, ballAnimatedStyles]} />
       <StatusBar style="auto" />
-      <CustomButton title={'GO BACK'} func={() => navigate('/')} />
-
     </View>
   );
 }
@@ -67,12 +131,13 @@ export default function Game() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    width: '100%',
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
   },
   ball: {
-    backgroundColor: 'white',
+    backgroundColor: 'blue',
     width: 25,
     aspectRatio: 1,
     borderRadius: 25,

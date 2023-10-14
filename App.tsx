@@ -9,8 +9,9 @@ export default function App() {
     <NativeRouter>
       <View style={styles.container}>
         <Routes>
-          <Route path="/gaming" element={<Game />} />
-          <Route path="/" element={<Start />} />
+          {/* temporarily setting game path to / for development */}
+          <Route path="/" element={<Game />} />
+          {/* <Route path="/" element={<Start />} /> */}
         </Routes>
         {/* <StatusBar style="auto" /> */}
       </View>
@@ -21,7 +22,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#white',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -28,11 +28,12 @@ export default function Start() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    width: "100%",
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonContainer: {
-    backgroundColor: '#000', // Set the background color to match the container
+    backgroundColor: 'white', // Set the background color to match the container
   },
 });
